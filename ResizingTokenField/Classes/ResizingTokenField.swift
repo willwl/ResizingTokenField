@@ -241,6 +241,8 @@ open class ResizingTokenField: UIView, UICollectionViewDataSource, UICollectionV
     
     open override func becomeFirstResponder() -> Bool {
         super.becomeFirstResponder()
+        guard let rect = collectionView.cellForItem(at: self.viewModel.textFieldCellIndexPath)?.frame else { return false }
+        collectionView.scrollRectToVisible(rect, animated: false)
         return textField?.becomeFirstResponder() == true
     }
     
@@ -350,10 +352,11 @@ open class ResizingTokenField: UIView, UICollectionViewDataSource, UICollectionV
                 self.collectionView.insertItems(at: indexPaths)
             }, completion: completion)
         } else {
-            UIView.performWithoutAnimation {
+            collectionView.performBatchUpdates({
                 collectionView.insertItems(at: indexPaths)
-            }
-            completion?(true)
+            }, completion: { (_) in
+                completion?(true)
+            })
         }
     }
     
